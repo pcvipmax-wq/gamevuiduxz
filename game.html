@@ -1,0 +1,480 @@
+ChatGPT said:
+Đây là bản 1 file HTML hoàn chỉnh. Bạn chỉ cần tạo file index.html, dán code vào rồi mở bằng trình duyệt.
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Clicker</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 420px;
+    }
+
+    .box {
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(15px);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 10px;
+      outline: none;
+      font-size: 16px;
+    }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 13px 20px;
+      margin-top: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      transform: scale(1.04);
+    }
+
+    .login-btn {
+      width: 100%;
+      background: #00e676;
+      color: #111;
+    }
+
+    .register-btn {
+      width: 100%;
+      background: #fff;
+      color: #333;
+    }
+
+    .game {
+      display: none;
+    }
+
+    .score {
+      font-size: 50px;
+      font-weight: bold;
+      margin: 25px 0;
+    }
+
+    .click-btn {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: #ffca28;
+      color: #5d4037;
+      font-size: 28px;
+      box-shadow: 0 8px 0 #f57f17;
+    }
+
+    .click-btn:active {
+      transform: translateY(6px);
+      box-shadow: 0 2px 0 #f57f17;
+    }
+
+    .logout {
+      background: #ff5252;
+      color: white;
+      margin-top: 25px;
+    }
+
+    .message {
+      margin-top: 12px;
+      min-height: 20px;
+      color: #ffeb3b;
+    }
+
+    .user {
+      color: #b9f6ca;
+      margin-bottom: 10px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .small {
+      margin-top: 15px;
+      font-size: 14px;
+      opacity: 0.8;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <!-- ĐĂNG NHẬP -->
+    <div class="box" id="loginBox">
+      <h1>🎮 Game Clicker</h1>
+
+      <input
+        type="text"
+        id="loginUsername"
+        placeholder="Tên đăng nhập"
+      >
+
+      <input
+        type="password"
+        id="loginPassword"
+        placeholder="Mật khẩu"
+      >
+
+      <button class="login-btn" onclick="login()">
+        🔐 Đăng nhập
+      </button>
+
+      <button class="register-btn" onclick="showRegister()">
+        📝 Tạo tài khoản
+      </button>
+
+      <div class="message" id="loginMessage"></div>
+
+      <p class="small">
+        Bạn phải đăng nhập để chơi game.
+      </p>
+    </div>
+
+
+    <!-- ĐĂNG KÝ -->
+    <div class="box hidden" id="registerBox">
+      <h1>📝 Đăng ký</h1>
+
+      <input
+        type="text"
+        id="registerUsername"
+        placeholder="Tên đăng nhập"
+      >
+
+      <input
+        type="password"
+        id="registerPassword"
+        placeholder="Mật khẩu"
+      >
+
+      <input
+        type="password"
+        id="registerPassword2"
+        placeholder="Nhập lại mật khẩu"
+      >
+
+      <button class="login-btn" onclick="register()">
+        ✅ Đăng ký
+      </button>
+
+      <button class="register-btn" onclick="showLogin()">
+        ↩️ Quay lại đăng nhập
+      </button>
+
+      <div class="message" id="registerMessage"></div>
+    </div>
+
+
+    <!-- GAME -->
+    <div class="box game" id="gameBox">
+
+      <h1>🎮 Clicker Game</h1>
+
+      <p class="user">
+        Xin chào, <strong id="playerName"></strong>!
+      </p>
+
+      <p>Điểm của bạn:</p>
+
+      <div class="score" id="score">
+        0
+      </div>
+
+      <button class="click-btn" onclick="clickGame()">
+        CLICK!
+      </button>
+
+      <br>
+
+      <button class="logout" onclick="logout()">
+        🚪 Đăng xuất
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <script>
+
+    // =========================
+    // KIỂM TRA TÀI KHOẢN
+    // =========================
+
+    function getUsers() {
+      return JSON.parse(localStorage.getItem("users")) || {};
+    }
+
+
+    // =========================
+    // HIỂN THỊ ĐĂNG NHẬP
+    // =========================
+
+    function showLogin() {
+      document.getElementById("loginBox").classList.remove("hidden");
+      document.getElementById("registerBox").classList.add("hidden");
+
+      document.getElementById("loginMessage").textContent = "";
+    }
+
+
+    // =========================
+    // HIỂN THỊ ĐĂNG KÝ
+    // =========================
+
+    function showRegister() {
+      document.getElementById("loginBox").classList.add("hidden");
+      document.getElementById("registerBox").classList.remove("hidden");
+
+      document.getElementById("registerMessage").textContent = "";
+    }
+
+
+    // =========================
+    // ĐĂNG KÝ
+    // =========================
+
+    function register() {
+
+      const username =
+        document.getElementById("registerUsername").value.trim();
+
+      const password =
+        document.getElementById("registerPassword").value;
+
+      const password2 =
+        document.getElementById("registerPassword2").value;
+
+      const message =
+        document.getElementById("registerMessage");
+
+      if (!username || !password || !password2) {
+        message.textContent = "⚠️ Vui lòng nhập đầy đủ thông tin!";
+        return;
+      }
+
+      if (password !== password2) {
+        message.textContent = "❌ Mật khẩu nhập lại không giống nhau!";
+        return;
+      }
+
+      if (password.length < 4) {
+        message.textContent = "⚠️ Mật khẩu phải có ít nhất 4 ký tự!";
+        return;
+      }
+
+      const users = getUsers();
+
+      if (users[username]) {
+        message.textContent = "❌ Tên đăng nhập đã tồn tại!";
+        return;
+      }
+
+      users[username] = {
+        password: password,
+        score: 0
+      };
+
+      localStorage.setItem("users", JSON.stringify(users));
+
+      message.style.color = "#00e676";
+      message.textContent =
+        "✅ Đăng ký thành công! Đang chuyển sang đăng nhập...";
+
+      setTimeout(() => {
+        showLogin();
+
+        document.getElementById("loginUsername").value = username;
+
+        document.getElementById("loginPassword").value = "";
+
+      }, 1000);
+    }
+
+
+    // =========================
+    // ĐĂNG NHẬP
+    // =========================
+
+    function login() {
+
+      const username =
+        document.getElementById("loginUsername").value.trim();
+
+      const password =
+        document.getElementById("loginPassword").value;
+
+      const message =
+        document.getElementById("loginMessage");
+
+      const users = getUsers();
+
+      if (!users[username]) {
+        message.textContent =
+          "❌ Tài khoản không tồn tại!";
+        return;
+      }
+
+      if (users[username].password !== password) {
+        message.textContent =
+          "❌ Mật khẩu không chính xác!";
+        return;
+      }
+
+      // Lưu người đang đăng nhập
+      localStorage.setItem("currentUser", username);
+
+      openGame();
+    }
+
+
+    // =========================
+    // VÀO GAME
+    // =========================
+
+    function openGame() {
+
+      const username =
+        localStorage.getItem("currentUser");
+
+      if (!username) {
+        return;
+      }
+
+      const users = getUsers();
+
+      if (!users[username]) {
+        logout();
+        return;
+      }
+
+      document.getElementById("loginBox")
+        .classList.add("hidden");
+
+      document.getElementById("registerBox")
+        .classList.add("hidden");
+
+      document.getElementById("gameBox")
+        .style.display = "block";
+
+      document.getElementById("playerName")
+        .textContent = username;
+
+      document.getElementById("score")
+        .textContent = users[username].score;
+    }
+
+
+    // =========================
+    // CLICK GAME
+    // =========================
+
+    function clickGame() {
+
+      const username =
+        localStorage.getItem("currentUser");
+
+      if (!username) {
+        alert("Bạn phải đăng nhập!");
+        return;
+      }
+
+      const users = getUsers();
+
+      users[username].score++;
+
+      localStorage.setItem(
+        "users",
+        JSON.stringify(users)
+      );
+
+      document.getElementById("score")
+        .textContent = users[username].score;
+    }
+
+
+    // =========================
+    // ĐĂNG XUẤT
+    // =========================
+
+    function logout() {
+
+      localStorage.removeItem("currentUser");
+
+      document.getElementById("gameBox")
+        .style.display = "none";
+
+      document.getElementById("loginBox")
+        .classList.remove("hidden");
+
+      document.getElementById("loginUsername").value = "";
+      document.getElementById("loginPassword").value = "";
+
+      document.getElementById("loginMessage").textContent =
+        "👋 Bạn đã đăng xuất!";
+    }
+
+
+    // =========================
+    // TỰ ĐĂNG NHẬP LẠI
+    // NẾU TRƯỚC ĐÓ ĐÃ ĐĂNG NHẬP
+    // =========================
+
+    window.onload = function() {
+
+      const currentUser =
+        localStorage.getItem("currentUser");
+
+      if (currentUser) {
+        const users = getUsers();
+
+        if (users[currentUser]) {
+          openGame();
+        }
+      }
+
+    };
+
+  </script>
+
+</body>
+</html>
